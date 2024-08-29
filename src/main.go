@@ -1,25 +1,20 @@
 package main
 
-import(
+import (
 	"fmt"
-	"os"
-	"webserver/src/log"
+	"xhttp/src/logging"
+	"xhttp/src/utils"
 )
 
+var log *logging.Logger
 
-// type WebServer struct {
-// 	Port		int
-// 	Addr	 	utils.IPAddr
-// }
-
+func init() {
+	log = logging.NewLogger(0, logging.LOG_NAME)
+}
 
 func main() {
-	logger := log.New(1, "MyLogger")
-	ret, err := logger.Err("Hi!")
+	log.Debug("How r yoused today ?!?")
+	utils.ValidateIP("127.0.0.1")
 
-	if err != nil {
-		fmt.Print("ERROR! ")
-	}
-
-	fmt.Fprintf(os.Stderr, "Log Printed: %d\n", ret)
+	fmt.Printf("Hellow World\n")
 }
