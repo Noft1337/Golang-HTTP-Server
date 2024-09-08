@@ -1,13 +1,25 @@
 package server
 
-import (
-	// "xhttp/src/log"
-	// "xhttp/src/utils"
+// "xhttp/src/log"
+// "xhttp/src/utils"
+
+const (
+	CHANNEL_BUFFER_SIZE = 65536
 )
 
 type Server struct {
 	Address		string
 	Port		int
+	chCnt		int
+	ch 			chan string
+}
+
+func NewHTTPServer(addr string, port int) Server {
+	
+	
+	return Server {
+
+	}
 }
 
 // This function takes the ip and port and tries to open a socket listener using these.
