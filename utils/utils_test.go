@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"net"
 	"testing"
 )
 
@@ -81,5 +82,49 @@ func TestValidatePort(t *testing.T) {
 			t.Errorf("Valid: False positive with err: %v", err.Error())
 			t.Fail()
 		}
+	}
+}
+
+func TestPortAvilable(t *testing.T) {
+	somePort := 46612
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", somePort))
+	if err != nil {
+		t.Logf("Warning, Port %d is used, skipping this test.", somePort)
+		t.Skip()
+	}
+
+	// Test with a port that is used. 
+	b := PortAvailable(somePort)
+	if b == true {
+		t.Errorf("Port %d shown as available even though it isn't", somePort)
+		t.Fail()
+	}
+
+	fmt.Printf("3\n")
+	err = l.Close() 
+	if err != nil {
+		t.Logf("Warning, Can't close port %d, skipping test", somePort)
+		t.Skip()
+	}
+
+	fmt.Printf("4\n")
+	// Testing that the port is knowingly available
+	b = PortAvailable(somePort)
+	if b == false {
+		t.Errorf("Port %d shown as unavailable even though it is", somePort)
+		t.Fail()
+	}
+}
+
+func TestRandomizePort(t *testing.T) {
+	p := RandomizePort()
+	if !PortAvailable(p) {
+		t.Errorf("Returned port %d is not available", p)
+		t.Fail()
+	}
+
+	if p < 1024 || p > SYSTEM_PRIVATE_BEGIN_PORT {
+		t.Errorf("Port returned is in invalid range")
+		t.Fail()
 	}
 }

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"xhttp/src/logging"
-	"xhttp/src/utils"
+	"xhttp/logging"
+	"xhttp/utils"
 )
 
 var log *logging.Logger

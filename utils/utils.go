@@ -3,12 +3,14 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"math/rand"
+	"net"
 	"os/user"
 	"runtime"
 	"strconv"
 	"strings"
 
-	"xhttp/src/logging"
+	"xhttp/logging"
 )
 
 
@@ -22,6 +24,16 @@ func init() {
 type UserType struct {
 	User 		*user.User
 	IsAdmin	bool
+}
+
+func FindInSliceInt(v int, s []int) bool {
+	for _, i := range s {
+		if v == i {
+			return true
+		}
+	}
+
+	return false
 }
 
 func isAdmin (user *user.User) (bool, error) {
@@ -120,10 +132,8 @@ func ValidatePort(port int) error {
 	}
 
 	if OS == "windows" || OS == "linux" {
-		for _, r := range RESERVED_PORTS {
-			if port == r {
-				return fmt.Errorf("Port: %d is a reserved system port", port)
-			}
+		if FindInSliceInt(port, RESERVED_PORTS) {
+			return fmt.Errorf("Port: %d is a reserved system port", port)
 		}
 
 		if port >= SYSTEM_PRIVATE_BEGIN_PORT{
@@ -138,4 +148,40 @@ func ValidatePort(port int) error {
 	}
 	
 	return nil
+}
+
+func PortAvailable(p int) bool {
+	portString := fmt.Sprintf(":%d", p)
+	l, err := net.Listen("tcp", portString)
+	fmt.Printf("11\n")
+
+	if err != nil {
+		return false
+	}
+
+	l.Close()
+	return true
+}
+
+
+func RandomizePort() int {
+	var p int
+	found := false
+
+	for !found {
+		p = rand.Intn(SYSTEM_PRIVATE_BEGIN_PORT)
+		if p < 1024 || FindInSliceInt(p, RESERVED_PORTS) {
+			continue
+		}
+
+		found = PortAvailable(p)
+	}
+
+	return p
+}
+
+func CloseConnections (conns []net.Conn) {
+	for _, c := range conns {
+		c.Close()
+	}
 }
